@@ -85,6 +85,24 @@
   .report-hint{margin-top:12px;font-size:12px;color:var(--sub);line-height:1.6}
   .report-hint a{color:var(--blue);text-decoration:none;font-family:var(--mono)}
 
+  /* REPORTED ACCOUNTS */
+  .rep-empty{font-family:var(--mono);font-size:12px;color:#aab4c4;text-align:center;padding:20px 0}
+  .rep-list{display:flex;flex-direction:column;gap:8px}
+  .rep-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;transition:border-color .15s}
+  .rep-item:hover{border-color:#c2d4ff}
+  .rep-avatar{width:34px;height:34px;border-radius:50%;background:var(--red-bg);border:1px solid var(--red-bd);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+  .rep-info{flex:1;min-width:0}
+  .rep-username{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rep-desc{font-size:11px;color:var(--sub);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rep-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+  .rep-status{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:3px 8px;border-radius:99px}
+  .rep-status.reported{background:var(--yellow-bg);border:1px solid var(--yellow-bd);color:var(--yellow)}
+  .rep-status.banned{background:var(--red-bg);border:1px solid var(--red-bd);color:var(--red)}
+  .rep-status.pending{background:#f0f4ff;border:1px solid #c2d4ff;color:var(--blue)}
+  .rep-time{font-family:var(--mono);font-size:10px;color:#aab4c4}
+  .rep-actions{display:flex;gap:6px;margin-top:10px}
+  .btn-sm{padding:6px 12px;font-size:10px;border-radius:6px}
+
   .foot{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
   .foot-brand{font-family:var(--mono);font-size:12px;color:var(--text);font-weight:500}
   .foot-brand span{color:var(--blue)}
@@ -200,7 +218,30 @@
     </div>
     <div id="report-result" class="result"></div>
     <div class="report-hint">
-      After submitting, also report directly to <a href="https://t.me/SpamBot" target="_blank">@SpamBot</a> on Telegram for the fastest removal.
+      Submitting opens <a href="https://t.me/SpamBot" target="_blank">@SpamBot</a> on Telegram automatically. Copy the message below and send it to SpamBot to complete the report.
+    </div>
+    <div id="copy-box" style="display:none;margin-top:14px;">
+      <div class="card-title" style="margin-bottom:8px;">&#128203; Copy &amp; Send to @SpamBot</div>
+      <textarea id="copy-text" rows="6" style="font-size:12px;color:var(--sub);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;width:100%;resize:none;font-family:var(--mono);outline:none;" readonly></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+        <button class="btn btn-blue" id="copy-btn" onclick="copyMsg()">Copy Message</button>
+        <a class="tg-link" href="https://t.me/SpamBot" target="_blank" rel="noopener" style="text-decoration:none;">&#10148;&nbsp;Open @SpamBot</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORTED ACCOUNTS -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div class="card-title" style="margin-bottom:0">&#128220; Reported Accounts</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span id="rep-total-badge" style="font-family:var(--mono);font-size:10px;background:var(--red-bg);border:1px solid var(--red-bd);color:var(--red);border-radius:99px;padding:3px 10px;letter-spacing:1px;">0 REPORTED</span>
+        <button class="btn btn-sm" onclick="clearReports()" style="background:transparent;border:1px solid var(--border);color:var(--sub);font-family:var(--mono);font-size:10px;letter-spacing:1px;cursor:pointer;padding:5px 10px;border-radius:6px;">Clear All</button>
+      </div>
+    </div>
+    <div id="rep-list-container">
+      <div class="rep-empty" id="rep-empty">No reports filed yet. Use the form above to report a fake account.</div>
+      <div class="rep-list" id="rep-list"></div>
     </div>
   </div>
 
@@ -215,8 +256,85 @@
   var KEYWORDS = ['hirushan_d','hirushanlk'];
   var REAL = 'hirushan_d';
 
-  var saved = localStorage.getItem('hg_reports');
-  if (saved) document.getElementById('rcnt').textContent = saved;
+  // Load reports from localStorage
+  function getReports() {
+    try { return JSON.parse(localStorage.getItem('hg_report_list') || '[]'); } catch(e) { return []; }
+  }
+  function saveReports(arr) {
+    localStorage.setItem('hg_report_list', JSON.stringify(arr));
+    localStorage.setItem('hg_reports', arr.length);
+  }
+
+  function timeAgo(ts) {
+    var diff = Math.floor((Date.now() - ts) / 1000);
+    if(diff < 60) return 'just now';
+    if(diff < 3600) return Math.floor(diff/60) + 'm ago';
+    if(diff < 86400) return Math.floor(diff/3600) + 'h ago';
+    return Math.floor(diff/86400) + 'd ago';
+  }
+
+  function statusCycle(id) {
+    var reports = getReports();
+    var idx = reports.findIndex(function(r){ return r.id === id; });
+    if(idx === -1) return;
+    var statuses = ['pending','reported','banned'];
+    var cur = statuses.indexOf(reports[idx].status);
+    reports[idx].status = statuses[(cur+1) % statuses.length];
+    saveReports(reports);
+    renderReports();
+  }
+
+  function deleteReport(id) {
+    var reports = getReports().filter(function(r){ return r.id !== id; });
+    saveReports(reports);
+    document.getElementById('rcnt').textContent = reports.length;
+    renderReports();
+  }
+
+  function clearReports() {
+    if(!confirm('Clear all reports?')) return;
+    saveReports([]);
+    document.getElementById('rcnt').textContent = '0';
+    renderReports();
+  }
+
+  function renderReports() {
+    var reports = getReports();
+    var list = document.getElementById('rep-list');
+    var empty = document.getElementById('rep-empty');
+    var badge = document.getElementById('rep-total-badge');
+    badge.textContent = reports.length + ' REPORTED';
+    document.getElementById('rcnt').textContent = reports.length;
+    if(reports.length === 0) {
+      empty.style.display = 'block';
+      list.innerHTML = '';
+      return;
+    }
+    empty.style.display = 'none';
+    var statusLabel = { pending: '&#8987; PENDING', reported: '&#9889; REPORTED', banned: '&#128683; BANNED' };
+    list.innerHTML = reports.slice().reverse().map(function(r) {
+      return '<div class="rep-item">' +
+        '<div class="rep-avatar">&#128683;</div>' +
+        '<div class="rep-info">' +
+          '<div class="rep-username">@' + escHtml(r.username) + '</div>' +
+          '<div class="rep-desc">' + escHtml(r.desc) + '</div>' +
+          (r.link ? '<div class="rep-desc" style="color:var(--blue)"><a href="'+escHtml(r.link)+'" target="_blank" style="color:var(--blue);text-decoration:none;font-family:var(--mono);font-size:10px;">'+escHtml(r.link)+'</a></div>' : '') +
+        '</div>' +
+        '<div class="rep-meta">' +
+          '<span class="rep-status ' + r.status + '" style="cursor:pointer" onclick="statusCycle(''+r.id+'')" title="Click to update status">' + statusLabel[r.status] + '</span>' +
+          '<span class="rep-time">' + timeAgo(r.ts) + '</span>' +
+          '<button onclick="deleteReport(''+r.id+'')" style="background:none;border:none;color:#aab4c4;cursor:pointer;font-size:11px;padding:0;font-family:var(--mono);">remove</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // Init
+  renderReports();
 
   function extractUsername(val) {
     val = val.trim();
@@ -280,7 +398,7 @@
     localStorage.setItem('hg_reports', count);
     res.style.display='block';
     res.className='result ok';
-    res.textContent='\u2713 Report #'+count+' logged. Now report to @SpamBot on Telegram for fastest removal.';
+    
     document.getElementById('r-user').value='';
     document.getElementById('r-link').value='';
     document.getElementById('r-desc').value='';
