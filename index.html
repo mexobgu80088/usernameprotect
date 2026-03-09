@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TelegramGuard</title>
+<title>Hiruzick Guard</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -11,29 +11,55 @@
     --blue:#0057ff;--blue-bg:#f0f4ff;--blue-bd:#c2d4ff;
     --red:#e5193a;--red-bg:#fff0f2;--red-bd:#ffc8d0;
     --green:#00875a;--green-bg:#f0fdf4;--green-bd:#b7f0d8;
+    --yellow:#7a5c00;--yellow-bg:#fffbeb;--yellow-bd:#fde68a;
     --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:400;min-height:100vh;-webkit-font-smoothing:antialiased}
   .wrap{max-width:640px;margin:0 auto;padding:0 24px 80px}
+
   .topbar{display:flex;align-items:center;justify-content:space-between;padding:32px 0 28px;border-bottom:1px solid var(--border);margin-bottom:48px}
-  .logo{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:1px;color:var(--text)}
+  .logo{font-family:var(--mono);font-size:14px;font-weight:500;letter-spacing:1px;color:var(--text)}
+  .logo span{color:var(--blue)}
   .badge{display:flex;align-items:center;gap:6px;background:var(--green-bg);border:1px solid var(--green-bd);border-radius:99px;padding:4px 12px;font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:1px}
   .dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 2s ease-in-out infinite}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
   .hero{margin-bottom:40px}
-  .hero h1{font-size:clamp(28px,6vw,42px);font-weight:600;color:var(--text);line-height:1.15;letter-spacing:-.5px;margin-bottom:12px}
+  .hero-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--sub);text-transform:uppercase;margin-bottom:12px}
+  .hero h1{font-size:clamp(30px,7vw,46px);font-weight:600;color:var(--text);line-height:1.1;letter-spacing:-.5px;margin-bottom:14px}
   .hero h1 em{font-style:normal;color:var(--blue)}
-  .hero p{font-size:15px;color:var(--sub);line-height:1.7;max-width:480px}
+  .hero p{font-size:15px;color:var(--sub);line-height:1.75;max-width:500px}
+
   .stats{display:flex;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px}
   .stat{flex:1;background:var(--white);padding:18px 16px;text-align:center}
   .stat-num{font-family:var(--mono);font-size:22px;font-weight:500;color:var(--text);display:block}
   .stat-label{font-size:11px;color:var(--sub);margin-top:3px;display:block}
+
   .card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:16px}
   .card-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--sub);text-transform:uppercase;margin-bottom:16px}
+
+  .verified-box{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px 20px;background:var(--green-bg);border:1px solid var(--green-bd);border-radius:10px;margin-bottom:14px}
+  .verified-left{display:flex;align-items:center;gap:12px}
+  .verified-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#0057ff,#00c6ff);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;color:#fff}
+  .verified-name{font-family:var(--mono);font-size:16px;font-weight:500;color:var(--text)}
+  .verified-name span{display:block;font-size:11px;color:var(--green);margin-top:3px;letter-spacing:.5px}
+  .tg-link{display:inline-flex;align-items:center;gap:6px;background:var(--blue);color:#fff;text-decoration:none;padding:9px 16px;border-radius:8px;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:1px;transition:background .15s;white-space:nowrap}
+  .tg-link:hover{background:#0046d6}
+  .verified-note{font-size:13px;color:var(--sub);line-height:1.7}
+  .verified-note strong{color:var(--text)}
+  .verified-note b{color:var(--red)}
+
+  .fake-list{display:flex;flex-direction:column;gap:8px}
+  .fake-item{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--red-bg);border:1px solid var(--red-bd);border-radius:8px}
+  .fake-icon{font-size:14px;flex-shrink:0}
+  .fake-name{flex:1;font-family:var(--mono);font-size:13px;color:var(--red);word-break:break-all}
+  .fake-label{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--red);opacity:.65;white-space:nowrap}
+
   .ids{display:flex;gap:8px;flex-wrap:wrap}
   .id-tag{background:var(--blue-bg);border:1px solid var(--blue-bd);border-radius:6px;padding:8px 16px;font-family:var(--mono);font-size:13px;font-weight:500;color:var(--blue);letter-spacing:.5px}
-  .warning-note{margin-top:16px;padding:12px 16px;background:var(--red-bg);border:1px solid var(--red-bd);border-radius:8px;font-size:13px;color:var(--red);line-height:1.6}
+  .alert-box{margin-top:14px;padding:13px 16px;background:var(--yellow-bg);border:1px solid var(--yellow-bd);border-radius:8px;font-size:13px;color:var(--yellow);line-height:1.7}
+
   input,textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px 14px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s}
   input::placeholder,textarea::placeholder{color:#aab4c4}
   input:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,87,255,.08);background:var(--white)}
@@ -41,62 +67,119 @@
   .input-row{display:flex;gap:8px}
   .input-row input{flex:1}
   .form-stack{display:flex;flex-direction:column;gap:10px}
+
   .btn{padding:11px 20px;border-radius:8px;border:none;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:1px;cursor:pointer;text-transform:uppercase;white-space:nowrap;transition:all .15s}
   .btn-blue{background:var(--blue);color:#fff}
   .btn-blue:hover{background:#0046d6}
   .btn-red{background:var(--red);color:#fff}
   .btn-red:hover{background:#c2112e}
   .btn:active{transform:scale(.97)}
-  .result{display:none;margin-top:12px;padding:12px 14px;border-radius:8px;font-family:var(--mono);font-size:12px;line-height:1.7}
+
+  .result{display:none;margin-top:12px;padding:12px 14px;border-radius:8px;font-family:var(--mono);font-size:12px;line-height:1.8}
+  .result.verified{background:var(--green-bg);border:2px solid var(--green);color:var(--green)}
   .result.safe{background:var(--green-bg);border:1px solid var(--green-bd);color:var(--green)}
   .result.danger{background:var(--red-bg);border:1px solid var(--red-bd);color:var(--red)}
   .result.ok{background:var(--green-bg);border:1px solid var(--green-bd);color:var(--green)}
   .result.err{background:var(--red-bg);border:1px solid var(--red-bd);color:var(--red)}
-  .foot{margin-top:40px;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+
+  .report-hint{margin-top:12px;font-size:12px;color:var(--sub);line-height:1.6}
+  .report-hint a{color:var(--blue);text-decoration:none;font-family:var(--mono)}
+
+  .foot{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+  .foot-brand{font-family:var(--mono);font-size:12px;color:var(--text);font-weight:500}
+  .foot-brand span{color:var(--blue)}
   .foot-text{font-family:var(--mono);font-size:11px;color:#aab4c4}
-  @media(max-width:480px){.input-row{flex-direction:column}.stats{flex-direction:column;gap:1px}}
+
+  @media(max-width:480px){.input-row{flex-direction:column}.stats{flex-direction:column;gap:1px}.verified-box{flex-direction:column;align-items:flex-start}}
 </style>
 </head>
 <body>
 <div class="wrap">
 
+  <!-- TOP BAR -->
   <div class="topbar">
-    <span class="logo">TelegramGuard</span>
+    <span class="logo">Hiruzick<span> Guard</span></span>
     <div class="badge"><span class="dot"></span>ACTIVE</div>
   </div>
 
+  <!-- HERO -->
   <div class="hero">
-    <h1>Your identity.<br><em>Protected.</em></h1>
-    <p>Monitoring Telegram for fake accounts impersonating verified identities. Any match is flagged and reported.</p>
+    <div class="hero-eyebrow">// Official Identity Protection</div>
+    <h1>One real account.<br><em>Everything else is fake.</em></h1>
+    <p>There is only <strong>one verified @Hiruzick</strong> on Telegram. Any other account — including those using lookalike Unicode characters or similar names — is an impersonator. Report them immediately.</p>
   </div>
 
+  <!-- STATS -->
   <div class="stats">
     <div class="stat">
-      <span class="stat-num">3</span>
-      <span class="stat-label">Protected Names</span>
+      <span class="stat-num">1</span>
+      <span class="stat-label">Real Account</span>
     </div>
     <div class="stat">
       <span class="stat-num" id="rcnt">0</span>
       <span class="stat-label">Reports Filed</span>
     </div>
     <div class="stat">
-      <span class="stat-num">24/7</span>
-      <span class="stat-label">Monitoring</span>
+      <span class="stat-num">0</span>
+      <span class="stat-label">Fakes Tolerated</span>
     </div>
   </div>
 
+  <!-- VERIFIED ACCOUNT -->
   <div class="card">
-    <div class="card-title">Protected Identities</div>
-    <div class="ids">
-      <div class="id-tag">Hirusik</div>
-      <div class="id-tag">HIRUZICK</div>
-      <div class="id-tag">ZICK_D</div>
+    <div class="card-title">&#10003; The Only Real Account</div>
+    <div class="verified-box">
+      <div class="verified-left">
+        <div class="verified-avatar">&#9889;</div>
+        <div class="verified-name">
+          @Hiruzick
+          <span>&#10003; VERIFIED &mdash; REAL IDENTITY</span>
+        </div>
+      </div>
+      <a class="tg-link" href="https://t.me/Hiruzick" target="_blank" rel="noopener">
+        &#10148;&nbsp;Open on Telegram
+      </a>
     </div>
-    <div class="warning-note">
-      ⚠ Any account using these usernames is fake. The real identities are verified and protected here.
+    <p class="verified-note">
+      This is the <strong>only legitimate Hiruzick account</strong>. If anyone contacts you from a different account claiming to be Hiruzick — it is a <b>scam</b>. Do not trust them. Block and report immediately.
+    </p>
+  </div>
+
+  <!-- KNOWN FAKES -->
+  <div class="card">
+    <div class="card-title">&#128683; Known Fake &amp; Banned Accounts</div>
+    <div class="fake-list">
+      <div class="fake-item">
+        <span class="fake-icon">&#128683;</span>
+        <span class="fake-name">ʜɪʀᴜᴢɪᴄᴋ&#x3000;&#xFF5C;&#x3000;&#x15E2; &#x200A;&#x200B;&#9834;</span>
+        <span class="fake-label">FAKE &mdash; BANNED</span>
+      </div>
+      <div class="fake-item">
+        <span class="fake-icon">&#128683;</span>
+        <span class="fake-name">Any unicode/special character lookalike of Hiruzick</span>
+        <span class="fake-label">FAKE &mdash; BANNED</span>
+      </div>
+      <div class="fake-item">
+        <span class="fake-icon">&#128683;</span>
+        <span class="fake-name">Hirushan_D &nbsp;/&nbsp; HirushanLk &nbsp;/&nbsp; any variation</span>
+        <span class="fake-label">FAKE &mdash; BANNED</span>
+      </div>
     </div>
   </div>
 
+  <!-- PROTECTED KEYWORDS -->
+  <div class="card">
+    <div class="card-title">Protected Keywords</div>
+    <div class="ids">
+      <div class="id-tag">Hirushan_D</div>
+      <div class="id-tag">HirushanLk</div>
+    </div>
+    <div class="alert-box">
+      &#9888;&nbsp; <strong>Zero tolerance.</strong> Any username using these keywords — or Unicode lookalikes (H&#1110;rushan_D, H&#1110;rushanLk, etc.) — will be reported to Telegram and permanently banned. No exceptions.
+    </div>
+  </div>
+
+  <!-- SCANNER -->
   <div class="card">
     <div class="card-title">Scan a Username</div>
     <div class="input-row">
@@ -106,82 +189,101 @@
     <div id="check-result" class="result"></div>
   </div>
 
+  <!-- REPORT -->
   <div class="card">
     <div class="card-title">Report a Fake Account</div>
     <div class="form-stack">
-      <input id="r-user" type="text" placeholder="Fake username" autocomplete="off" />
+      <input id="r-user" type="text" placeholder="Fake account username" autocomplete="off" />
       <input id="r-link" type="text" placeholder="t.me/link (optional)" autocomplete="off" />
-      <textarea id="r-desc" placeholder="Describe the impersonation..."></textarea>
+      <textarea id="r-desc" placeholder="Describe how this account impersonates @Hirushan_D or @HirushanLk..."></textarea>
       <div><button class="btn btn-red" onclick="report()">Submit Report</button></div>
     </div>
     <div id="report-result" class="result"></div>
+    <div class="report-hint">
+      After submitting, also report directly to <a href="https://t.me/SpamBot" target="_blank">@SpamBot</a> on Telegram for the fastest removal.
+    </div>
   </div>
 
+  <!-- FOOTER -->
   <div class="foot">
-    <span class="foot-text">© 2026 TelegramGuard</span>
+    <span class="foot-brand">Hiruzick<span> Guard</span></span>
     <span class="foot-text">Impersonation violates Telegram's ToS</span>
   </div>
 
 </div>
 <script>
-  const PROTECTED = ['hirusik', 'hiruzick', 'zick_d'];
+  var KEYWORDS = ['hirushan_d','hirushanlk'];
+  var REAL = 'hirushan_d';
 
-  // Restore saved count
-  const saved = localStorage.getItem('tg_reports');
+  var saved = localStorage.getItem('hg_reports');
   if (saved) document.getElementById('rcnt').textContent = saved;
 
   function extractUsername(val) {
     val = val.trim();
-    const m = val.match(/(?:t\.me\/|telegram\.me\/)([A-Za-z0-9_]+)/i);
+    var m = val.match(/(?:https?:\/\/)?(?:t\.me|telegram\.me)\/([A-Za-z0-9_]+)/i);
     if (m) return m[1];
-    return val.replace(/^@/, '');
+    return val.replace(/^@/,'');
+  }
+
+  // Map common Unicode lookalike chars to ASCII
+  function normalize(s) {
+    var map = {
+      '\u029C':'h','\u0280':'r','\u026A':'i','\u1D1C':'u',
+      '\u1D22':'z','\u026C':'l','\u1D04':'c','\u1D0B':'k',
+      '\u0430':'a','\u0435':'e','\u043E':'o','\u0440':'r',
+      '\u0441':'c','\u0456':'i','\u04CF':'i',
+      '\uFF48':'h','\uFF52':'r','\uFF49':'i','\uFF55':'u',
+      '\uFF5A':'z','\uFF43':'c','\uFF4B':'k'
+    };
+    var r='';
+    for(var i=0;i<s.length;i++) r+=(map[s[i]]!==undefined?map[s[i]]:s[i]);
+    return r;
   }
 
   function findMatch(u) {
-    const l = u.toLowerCase();
-    return PROTECTED.find(k => l.includes(k)) || null;
+    var l = normalize(u).toLowerCase().replace(/[^a-z0-9_]/g,'');
+    for(var i=0;i<KEYWORDS.length;i++) if(l.indexOf(KEYWORDS[i])!==-1) return KEYWORDS[i];
+    return null;
   }
 
   function check() {
-    const raw = document.getElementById('u').value.trim();
-    const res = document.getElementById('check-result');
-    if (!raw) return;
-    const u = extractUsername(raw);
-    const match = findMatch(u);
+    var raw = document.getElementById('u').value.trim();
+    var res = document.getElementById('check-result');
+    if(!raw) return;
+    var u = extractUsername(raw);
     res.style.display = 'block';
-    if (match) {
+    if(u.toLowerCase() === REAL) {
+      res.className = 'result verified';
+      res.innerHTML = '\u2705 VERIFIED REAL ACCOUNT\n@'+u+' is the one and only legitimate Hiruzick on Telegram.';
+      return;
+    }
+    var match = findMatch(u);
+    if(match) {
       res.className = 'result danger';
-      res.innerHTML = '⛔ Infringement — @' + u + ' matches protected keyword "' + match.toUpperCase() + '"<br>Report this account using the form below.';
+      res.innerHTML = '\u26D4 FAKE ACCOUNT DETECTED\n@'+u+' matches protected keyword "'+match.toUpperCase()+'".\nReport this account immediately using the form below.';
     } else {
       res.className = 'result safe';
-      res.textContent = '✓ Clear — @' + u + ' — no match found';
+      res.textContent = '\u2713 Clear \u2014 @'+u+' \u2014 no protected keyword match found.';
     }
   }
 
-  document.getElementById('u').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') check();
-  });
+  document.getElementById('u').addEventListener('keydown',function(e){if(e.key==='Enter')check();});
 
   function report() {
-    const u = document.getElementById('r-user').value.trim();
-    const d = document.getElementById('r-desc').value.trim();
-    const res = document.getElementById('report-result');
-    if (!u || !d) {
-      res.style.display = 'block';
-      res.className = 'result err';
-      res.textContent = 'Username and description required.';
-      return;
-    }
-    const el = document.getElementById('rcnt');
-    const count = parseInt(el.textContent || '0') + 1;
+    var u = document.getElementById('r-user').value.trim();
+    var d = document.getElementById('r-desc').value.trim();
+    var res = document.getElementById('report-result');
+    if(!u||!d){res.style.display='block';res.className='result err';res.textContent='Please fill in the username and description.';return;}
+    var el = document.getElementById('rcnt');
+    var count = parseInt(el.textContent||'0')+1;
     el.textContent = count;
-    localStorage.setItem('tg_reports', count);
-    res.style.display = 'block';
-    res.className = 'result ok';
-    res.textContent = '✓ Report #' + count + ' logged. Also report directly to @SpamBot on Telegram for fastest action.';
-    document.getElementById('r-user').value = '';
-    document.getElementById('r-link').value = '';
-    document.getElementById('r-desc').value = '';
+    localStorage.setItem('hg_reports', count);
+    res.style.display='block';
+    res.className='result ok';
+    res.textContent='\u2713 Report #'+count+' logged. Now report to @SpamBot on Telegram for fastest removal.';
+    document.getElementById('r-user').value='';
+    document.getElementById('r-link').value='';
+    document.getElementById('r-desc').value='';
   }
 </script>
 </body>
