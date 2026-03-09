@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TelegramGuard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #f5f6f8;
+    --white:   #ffffff;
+    --border:  #e2e6ea;
+    --text:    #1a1f2e;
+    --sub:     #6b7a92;
+    --blue:    #0057ff;
+    --blue-bg: #f0f4ff;
+    --red:     #e5193a;
+    --red-bg:  #fff0f2;
+    --green:   #00875a;
+    --green-bg:#f0fdf4;
+    --mono:    'DM Mono', monospace;
+    --sans:    'DM Sans', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 400;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 32px 0 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    color: var(--text);
+  }
+
+  .badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--green-bg);
+    border: 1px solid #b7f0d8;
+    border-radius: 99px;
+    padding: 4px 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--green);
+    letter-spacing: 1px;
+  }
+
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  /* ── HERO ── */
+  .hero {
+    margin-bottom: 40px;
+  }
+
+  .hero h1 {
+    font-size: clamp(28px, 6vw, 42px);
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--blue);
+  }
+
+  .hero p {
+    font-size: 15px;
+    color: var(--sub);
+    line-height: 1.7;
+    max-width: 480px;
+  }
+
+  /* ── SECTION CARD ── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--sub);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  /* ── IDENTITY TAGS ── */
+  .ids {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .id-tag {
+    background: var(--blue-bg);
+    border: 1px solid #c2d4ff;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--blue);
+    letter-spacing: 0.5px;
+  }
+
+  .warning-note {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: var(--red-bg);
+    border: 1px solid #ffc8d0;
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--red);
+    line-height: 1.6;
+  }
+
+  /* ── INPUTS ── */
+  input, textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+
+  input::placeholder, textarea::placeholder { color: #aab4c4; }
+
+  input:focus, textarea:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(0,87,255,.08);
+    background: var(--white);
+  }
+
+  textarea { resize: vertical; min-height: 72px; }
+
+  .input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 0;
+  }
+
+  .input-row input { flex: 1; }
+
+  .form-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    padding: 11px 20px;
+    border-radius: 8px;
+    border: none;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: all .15s;
+  }
+
+  .btn-blue {
+    background: var(--blue);
+    color: #fff;
+  }
+
+  .btn-blue:hover { background: #0046d6; }
+
+  .btn-red {
+    background: var(--red);
+    color: #fff;
+  }
+
+  .btn-red:hover { background: #c2112e; }
+
+  .btn:active { transform: scale(.97); }
+
+  /* ── RESULT ── */
+  .result {
+    display: none;
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .result.safe   { background: var(--green-bg); border: 1px solid #b7f0d8; color: var(--green); }
+  .result.danger { background: var(--red-bg);   border: 1px solid #ffc8d0; color: var(--red); }
+  .result.ok     { background: var(--green-bg); border: 1px solid #b7f0d8; color: var(--green); }
+  .result.err    { background: var(--red-bg);   border: 1px solid #ffc8d0; color: var(--red); }
+
+  /* ── STATS ROW ── */
+  .stats {
+    display: flex;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .stat {
+    flex: 1;
+    background: var(--white);
+    padding: 18px 16px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--sub);
+    margin-top: 3px;
+    display: block;
+  }
+
+  /* ── FOOTER ── */
+  .foot {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .foot-text {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #aab4c4;
+  }
+
+  @media (max-width: 480px) {
+    .input-row { flex-direction: column; }
+    .stats { flex-direction: column; gap: 1px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <span class="logo">TelegramGuard</span>
+    <div class="badge"><span class="dot"></span>ACTIVE</div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>Your identity.<br><em>Protected.</em></h1>
+    <p>Monitoring Telegram for fake accounts impersonating verified identities. Any match is flagged and reported.</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <span class="stat-num">{{len .ProtectedNames}}</span>
+      <span class="stat-label">Protected Names</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num" id="rcnt">{{.TotalReports}}</span>
+      <span class="stat-label">Reports Filed</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">24/7</span>
+      <span class="stat-label">Monitoring</span>
+    </div>
+  </div>
+
+  <!-- PROTECTED IDS -->
+  <div class="card">
+    <div class="card-title">Protected Identities</div>
+    <div class="ids">
+      {{range .ProtectedNames}}
+      <div class="id-tag">{{.}}</div>
+      {{end}}
+    </div>
+    <div class="warning-note">
+      ⚠ Any account using these usernames is fake. The real identities are verified and protected here.
+    </div>
+  </div>
+
+  <!-- SCANNER -->
+  <div class="card">
+    <div class="card-title">Scan a Username</div>
+    <div class="input-row">
+      <input id="u" type="text" placeholder="@username" autocomplete="off" spellcheck="false" />
+      <button class="btn btn-blue" onclick="check()">Scan</button>
+    </div>
+    <div id="check-result" class="result"></div>
+  </div>
+
+  <!-- REPORT -->
+  <div class="card">
+    <div class="card-title">Report a Fake Account</div>
+    <div class="form-stack">
+      <input id="r-user" type="text" placeholder="Fake username" autocomplete="off" />
+      <input id="r-link" type="text" placeholder="t.me/link (optional)" autocomplete="off" />
+      <textarea id="r-desc" placeholder="Describe the impersonation..."></textarea>
+      <div><button class="btn btn-red" onclick="report()">Submit Report</button></div>
+    </div>
+    <div id="report-result" class="result"></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="foot">
+    <span class="foot-text">© {{.Year}} TelegramGuard</span>
+    <span class="foot-text">Impersonation violates Telegram's ToS</span>
+  </div>
+
+</div>
+<script>
+async function check() {
+  const box = document.getElementById('u'), res = document.getElementById('check-result');
+  const u = box.value.trim().replace(/^@/, '');
+  if (!u) return;
+  res.style.display = 'block'; res.className = 'result'; res.textContent = '...';
+  try {
+    const d = await fetch(`/api/check?username=${encodeURIComponent(u)}`).then(r => r.json());
+    if (d.is_infringement) {
+      res.className = 'result danger';
+      res.innerHTML = `⛔ Infringement — @${d.username} matches "${d.matched_keyword}"<br>Report this account below.`;
+    } else {
+      res.className = 'result safe';
+      res.textContent = `✓ Clear — @${d.username} — no match found`;
+    }
+  } catch { res.className = 'result danger'; res.textContent = 'Connection error.'; }
+}
+document.getElementById('u').addEventListener('keydown', e => e.key === 'Enter' && check());
+
+async function report() {
+  const u = document.getElementById('r-user').value.trim();
+  const l = document.getElementById('r-link').value.trim();
+  const d = document.getElementById('r-desc').value.trim();
+  const res = document.getElementById('report-result');
+  if (!u || !d) { res.style.display='block'; res.className='result err'; res.textContent='Username and description required.'; return; }
+  res.style.display='block'; res.className='result'; res.textContent='...';
+  try {
+    const r = await fetch('/api/report', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({fake_username: u.replace(/^@/,''), telegram_link: l, description: d})
+    }).then(r => r.json());
+    if (r.success) {
+      res.className = 'result ok';
+      res.textContent = `✓ Report #${r.id} filed. Thank you.`;
+      ['r-user','r-link','r-desc'].forEach(id => document.getElementById(id).value = '');
+      const el = document.getElementById('rcnt');
+      el.textContent = parseInt(el.textContent) + 1;
+    } else { res.className='result err'; res.textContent='Failed. Try again.'; }
+  } catch { res.className='result err'; res.textContent='Connection error.'; }
+}
+</script>
+</body>
+</html>
